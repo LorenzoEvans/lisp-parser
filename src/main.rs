@@ -19,10 +19,6 @@ fn tokenize(code: String) -> Vec<TokenType> {
     let mut ast_string = String::new();
 
     for (i, c) in code.char_indices() {
-        if c.is_alphabetic() {
-            // let identifier = c.to_string() + &i.to_string();
-            symbol_stack.push(TokenType::Char(Token{content:( c.to_string(), i)}));
-        }
         match c {
             '(' => {
                 symbol_stack.push(TokenType::Opening(Token{content:( c.to_string(), i)}));
@@ -44,13 +40,12 @@ fn tokenize(code: String) -> Vec<TokenType> {
             }
             x => {
                 // handle alphabets via wild card,
-                // let everything else drop possible.
+                // let everything else drop if possible.
                 if x.is_numeric() {
                     symbol_stack.push(TokenType::Operand(Token{content:( c.to_string(), i)}));
                     ast_string.push(x);
                 }
                 else if c.is_alphabetic() {
-                    // let identifier = c.to_string() + &i.to_string();
                     symbol_stack.push(TokenType::Char(Token{content:( c.to_string(), i)}));
                 }
                 else {
@@ -64,19 +59,21 @@ fn tokenize(code: String) -> Vec<TokenType> {
 
 fn make_ast(symbol_stack: Vec<TokenType>) -> (){
     for i in symbol_stack {
-        let mut ast = vec![];
-        match &mut i {
-            TokenType::Opening(i) => {
-            ast.push("(")
-            }
-            TokenType::Closing(i) => {
-                ast.push(")")
-            }
-            TokenType::Char(i) => {
-                let (token, index) = i;
-                // ast.push()
-            }
-        }
+        // let mut ast = vec![];
+        // match &mut i {
+        //     TokenType::Opening(i) => {
+        //     ast.push("(")
+        //     }
+        //     TokenType::Closing(i) => {
+        //         ast.push(")")
+        //     }
+        //     TokenType::Char(i) => {
+        //         // Alright, so how do I access a non-deterministic value of a deterministic class that has a 
+        //         // lexicographical order based on references I don't believe I can access yet.
+        //         let (token, index) = i;
+        //         // ast.push()
+        //     }
+        // }
         println!("{:?}", i);
     }
 }
