@@ -73,10 +73,17 @@ fn make_ast(symbol_stack: Vec<TokenType>) -> (){
         //         let (token, index) = i;
         //         // ast.push()
         //     }
-        // }
-        println!("{:?}", i);
+        
+        match i {
+            TokenType::Opening(Token { content }) => {
+                println!("Token is {:?}", content)
+            }
+            _ => {
+                break
+            }
+        }
+        }
     }
-}
 
    // *** We're skipping the numbers ***
 
