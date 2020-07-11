@@ -1,11 +1,26 @@
+use std::collections::HashMap;
+
 fn main() {
-    println!("{:?}", make_ast(tokenize(String::from("(first (list 1 (+ 2 3) 9))"))))
+    println!("{:?}", output_ast(make_ast(tokenize(String::from("(first (list 1 (+ 2 3) 9))")))))
 }
 
+// We have to parse a string.
+    // A string is just a vector of bytes.
+// We want to match certain parts of the string abstractly,
+// and capture them in a nested format.
+// Alright so we can capture individual chars, as well as whitespace,
+// in terms of the Lisp code, we need to differentiate between:
+    // delimiters
+    // symbols
+    // operators
+        // whether or not operators are unary or binary
+    // operands
+    // whitespace
+
 #[derive(Debug,)]
-struct Token{content: (String, usize)}
+struct Token{content: (String, usize)} // A token is our smallest building block.
 #[derive(Debug)]
-enum TokenType {
+enum TokenType { // We use an enum, to differentiate between the types of tokens we'll encounter. 
     Opening(Token),
     Closing(Token),
     Char(Token),
@@ -38,9 +53,7 @@ fn tokenize(code: String) -> Vec<TokenType> {
                 ast_string.push('+');
                 ast_string.push(' ');
             }
-            x => {
-                // handle alphabets via wild card,
-                // let everything else drop if possible.
+            x => { // Using this wildcard to filter out characters and numbers because matching all the utf string characters is highly not feasible.
                 if x.is_numeric() {
                     symbol_stack.push(TokenType::Operand(Token{content:( c.to_string(), i)}));
                     ast_string.push(x);
@@ -57,46 +70,59 @@ fn tokenize(code: String) -> Vec<TokenType> {
     symbol_stack
 }
 
-fn make_ast(symbol_stack: Vec<TokenType>) -> (){
+fn make_ast(symbol_stack: Vec<TokenType>) -> Vec<(String, usize)> {
+    // Now that we're able to unwrap our enums, 
+    // and push them into a vector, without whitespace or parentheses.
+    // What we need to do now is figure out how to use the index of each character 
+    // to rebuild the ast in order. 
+    //  Generally, we can rely on numerical ordering, even with the gaps, because we don't need to know
+    // what numbers lie between 3 and 9, to know that 9 is greater than 3's, 
+    // or that the distance can't be greater than the number of 3's that can fit in 9.
+        // The distance between integers x and y can never be greater than the number of x's that can fit inside y.
+        // Can we *prove* this, though? *save for later*
+    // We have to take care to cast our operands back to integer values.
+    // # Issue One: We need to generate vectors, for each symbol we encounter.
+        // # We can get away with fixed-arrays, where the expected length is one symbol, and the entire
+        // subsequent nested forms- the issue this brings up is *typing*.
+    // Other than that, we have to figure out looping over our tuples, which increase in order,
+    // allowing us to check for a number skip, due to our missing whitespaces. (This seems shaky, relying on the removal of an empty char)
+    
+    let mut ast: Vec<(String, usize)> = Vec::new();
     for i in symbol_stack {
-        // let mut ast = vec![];
-        // match &mut i {
-        //     TokenType::Opening(i) => {
-        //     ast.push("(")
-        //     }
-        //     TokenType::Closing(i) => {
-        //         ast.push(")")
-        //     }
-        //     TokenType::Char(i) => {
-        //         // Alright, so how do I access a non-deterministic value of a deterministic class that has a 
-        //         // lexicographical order based on references I don't believe I can access yet.
-        //         let (token, index) = i;
-        //         // ast.push()
-        //     }
         
         match i {
             TokenType::Opening(Token { content }) => {
-                println!("Token is {:?}", content)
+                continue 
+            }
+            TokenType::Char(Token { content }) => {
+                ast.push((String::from(content.0), content.1))
+            }
+            TokenType::Operator(Token { content }) => {
+                ast.push((String::from(content.0), content.1))
+            }
+            TokenType::Operand(Token { content }) => {
+                ast.push((String::from(content.0), content.1))
             }
             _ => {
-                break
+                continue
             }
         }
-        }
     }
+    ast
 
-   // *** We're skipping the numbers ***
+}
+// [("f", 1), ("i", 2), ("r", 3), ("s", 4), ("t", 5), ("l", 8), ("i", 9), ("s", 10), ("t", 11), ("1", 13), ("+", 16), ("2", 18), ("3", 20), ("9", 23)]
+fn output_ast(ast: Vec<(String, usize)>) {
 
-
-    // We have to parse a string.
-        // A string is just a vector of bytes.
-    // We want to match certain parts of the string abstractly,
-    // and capture them in a nested format.
-    // Alright so we can capture individual chars, as well as whitespace,
-    // in terms of the Lisp code, we need to differentiate between:
-        // delimiters
-        // symbols
-        // operators
-            // whether or not operators are unary or binary
-        // operands
-        // whitespace
+    let mut cur_idx = 0; // manual iterator for peeking forward
+    let mut s_tree = vec![];
+    for i in range(0, (ast.len() + 1)) { // take the length so that our iterator is the item
+        if (ast[i + 1].1 - ast[i].1) > 1 { // if the next items second value minus the prev items second value
+                                          // is greater than 1, we've hit a skip in our string count and finished a symbol.
+            
+        }
+        cur_idx = i.1;
+        s_tree.push(i.0);
+        println!("{}", cur_idx);
+    }
+}
