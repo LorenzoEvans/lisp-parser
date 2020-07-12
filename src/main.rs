@@ -15,7 +15,7 @@ fn main() {
     // operators
         // whether or not operators are unary or binary
     // operands
-    // whitespace
+    // whitespacex
 
 #[derive(Debug,)]
 struct Token{content: (String, usize)} // A token is our smallest building block.
@@ -112,17 +112,20 @@ fn make_ast(symbol_stack: Vec<TokenType>) -> Vec<(String, usize)> {
 
 }
 // [("f", 1), ("i", 2), ("r", 3), ("s", 4), ("t", 5), ("l", 8), ("i", 9), ("s", 10), ("t", 11), ("1", 13), ("+", 16), ("2", 18), ("3", 20), ("9", 23)]
-fn output_ast(ast: Vec<(String, usize)>) {
+fn output_ast(ast: Vec<(String, usize)>) -> Vec<String> {
 
     let mut cur_idx = 0; // manual iterator for peeking forward
     let mut s_tree = vec![];
-    for i in range(0, (ast.len() + 1)) { // take the length so that our iterator is the item
+    for i in 0..ast.len() - 1 { // take the length so that our iterator is the item
         if (ast[i + 1].1 - ast[i].1) > 1 { // if the next items second value minus the prev items second value
                                           // is greater than 1, we've hit a skip in our string count and finished a symbol.
-            
+            // println!("index: {}", i);
+
         }
-        cur_idx = i.1;
-        s_tree.push(i.0);
-        println!("{}", cur_idx);
+        cur_idx = ast[i].1;
+        s_tree.push(ast[i].0.clone());
+        // println!("{}", cur_idx);
     }
+    s_tree.push(ast[ast.len() - 1].0.clone());
+    s_tree
 }
