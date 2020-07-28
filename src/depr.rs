@@ -223,3 +223,35 @@ fn output_ast(ast: Vec<(String, usize)>) -> Vec<String> {
     s_tree.push(ast[ast.len() - 1].0.clone());
     s_tree
 }
+
+
+fn make_tree(source: String) {
+    // so we want to loop through and grab a symbol 
+    // we want to throw that symbol in a hashmap (so we can preserve nested structure)
+    // once we grab a symbol, we need to know if the string is done.
+    // if not, we continue looping (maybe with a next call, maybe typical iterator)
+    // we can match for symbols as strings of chars, operators as non-alphanumeric symbols, and numbers as numbers
+    
+    // let mut ast: HashMap<i32, > = HashMap::new();
+    // let mut symbol_vec = Vec::new();
+    
+    let re = Regex::new(r"\w+[^\(^\)[\+]]").unwrap();
+    let mut str_vec: Vec<&str> = Vec::new();
+    for caps in re.captures_iter(&source) {
+        if let Some(cap) = caps.get(0) {
+            let word = cap.as_str();
+            str_vec.push(word); 
+        }
+        // let ast_symbol = symbol.to_string();
+        // ast.insert(counter, symbol.as_str());
+        // symbol_vec.push(symbol);
+    }
+    // for caps in symbol_vec {
+    //     if let Some(cap) = caps.get(0) {
+    //         let word = cap.as_str();
+    //         str_vec.push(word);
+    //     }
+    // }
+    println!("str_vec {:?}", str_vec);
+}
+
