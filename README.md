@@ -1,4 +1,4 @@
-# Lisp Parser
+# Lisp Tokenizer
 
 Decided to take a crack at writing a parser for Lisp,
 so far I've gotten full tokenization implemented, using enumerated types to
